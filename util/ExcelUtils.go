@@ -3,13 +3,36 @@ package util
 import (
 	"WT/entry"
 	"github.com/360EntSecGroup-Skylar/excelize/v2"
+	"io/ioutil"
 	reflect "reflect"
 	"strconv"
 	"strings"
+	"time"
 )
 
 // ExcelCreate 创建Excel操作文件类
 func ExcelCreate(path string) *excelize.File {
+	files, err := ioutil.ReadDir(path)
+	if err != nil {
+		return nil
+	}
+	var max int
+	var changeTime time.Time
+	for i, file := range files {
+		split := strings.Split(file.Name(), ".")
+		if split[1] == "xlsx" || split[1] == "xls" {
+			if time.Time.IsZero(changeTime) {
+				changeTime = file.ModTime()
+				max = i
+			} else {
+				if file.ModTime().Before(changeTime) {
+					changeTime = file.ModTime()
+					max = i
+				}
+			}
+		}
+	}
+	path += "/"+files[max].Name()
 	file, err := excelize.OpenFile(path)
 	if err != nil {
 		print(err)
@@ -17,11 +40,29 @@ func ExcelCreate(path string) *excelize.File {
 	}
 	return file
 }
-func ExcelRead(content *entry.TableContent) {
+func ExcelCreateMode(fileName string) *excelize.File {
+	file, err := excelize.OpenFile(fileName)
+	if err != nil {
+		print(err)
+		return nil
+	}
+	return file
+}
+func ExcelRead(content *entry.TableContent, deploy entry.Deploy) {
 	// 获取模板文件
-	create := ExcelCreate("F:\\\\周报\\mode.xlsx")
+	var create *excelize.File
+	if deploy.ModePath == "" {
+		print(deploy.OutPath)
+		create = ExcelCreate(deploy.OutPath)
+	}else {
+		print(deploy.ModePath)
+		create = ExcelCreateMode(deploy.ModePath)
+	}
+
 	// 获取写入文件
-	nowSheetName := "5月"
+	nowMonth := strconv.Itoa(int(time.Now().Month())) + "月"
+	fileName := content.WorkingDay[0] + "-" + content.WorkingDay[len(content.WorkingDay)-1] + " - " + nowMonth + content.NowWeek + "工作周报(" + deploy.Author + ").xlsx"
+	nowSheetName := nowMonth
 	defaultSheetName := "Sheet1"
 	// 获取模板所有数据
 	rows, err := create.GetRows(defaultSheetName)
@@ -134,10 +175,19 @@ func ExcelRead(content *entry.TableContent) {
 	if err != nil {
 		return
 	}
-	err = create.Save()
-	if err != nil {
-		return
+	if deploy.ModePath == "" {
+		err = create.Save()
+		if err != nil {
+			return
+		}
+	} else {
+		err := create.SaveAs(deploy.OutPath+"/"+fileName)
+		if err != nil {
+			print(err.Error())
+			return
+		}
 	}
+
 }
 
 // 设置单元格样式

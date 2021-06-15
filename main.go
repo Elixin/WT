@@ -26,7 +26,7 @@ func main() {
 	parsing, allContext := TextParsingRewrite(acquisition)
 	tableContent := entry.TableContent{}
 	tableContent = tableContent.SetValueInEntry(deploy, week, parsing, allContext)
-	util.ExcelRead(&tableContent)
+	util.ExcelRead(&tableContent,*deploy)
 	errorPrint(err)
 	// 创建邮箱发送地址
 	// 写入发送内容模板
