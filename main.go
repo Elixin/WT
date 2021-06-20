@@ -22,8 +22,6 @@ func main() {
 	tableContent := entry.TableContent{}
 	tableContent = tableContent.SetValueInEntry(deploy, week, parsing, allContext)
 	util.ExcelRead(&tableContent,*deploy)
-	errorPrint(err)
-
 	util.Errors(err)
 	// 创建邮箱发送地址
 	// 写入发送内容模板

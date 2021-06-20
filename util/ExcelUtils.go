@@ -157,10 +157,8 @@ func setCellStyle(sheetName string, create *excelize.File, nowRowNum int, modeHe
 func WriteFileContent(content *entry.TableContent, tableFieldName string) (value interface{}) {
 	// 反射获取实体类字段名
 	elem := reflect.ValueOf(content).Elem()
-	typeInfo := elem.Type()
 	tableFieldName = strings.Split(tableFieldName, "$")[1]
 	// 从结构体中获取切片
-	println(tableFieldName)
 	if strings.ContainsAny(tableFieldName, "_") {
 		split := strings.Split(tableFieldName, "_")
 		index, err := strconv.Atoi(split[1])
@@ -170,22 +168,7 @@ func WriteFileContent(content *entry.TableContent, tableFieldName string) (value
 		return of.Index(index - 1)
 
 	}
-	name, b := typeInfo.FieldByName(tableFieldName)
-	if b {
-		switch name.Type.Kind().String() {
-		case "int":
-			value := elem.FieldByName(tableFieldName).Interface().(int)
-			print(name.Name, value)
-			return value
-		case "float64":
-			value := elem.FieldByName(tableFieldName).Interface().(float64)
-			print(name.Name, value)
-			return value
-		case "string":
-			value := elem.FieldByName(tableFieldName).Interface().(string)
-			print(name.Name, value)
-			return value
-		}
-	}
-	return nil
+	// 通过字段名获取属性值
+	field := elem.FieldByName(tableFieldName)
+	return field
 }
