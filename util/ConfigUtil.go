@@ -14,9 +14,7 @@ func InitConfig(path string) map[string]string {
 
 	f, err := os.Open(path)
 	defer f.Close()
-	if err != nil {
-		panic(err)
-	}
+	Errors(err)
 
 	r := bufio.NewReader(f)
 	for {
