@@ -3,14 +3,16 @@ package util
 import (
 	"WT/entry"
 	"bufio"
+	"encoding/json"
+	"fmt"
 	"io"
 	"os"
 	"strings"
 )
 
 //读取key=value类型的配置文件
-func InitConfig(path string) map[string]string {
-	config := make(map[string]string)
+func InitConfig(path string) *entry.Deploy {
+	config := make(map[string]interface{})
 
 	f, err := os.Open(path)
 	defer f.Close()
@@ -25,6 +27,7 @@ func InitConfig(path string) map[string]string {
 			}
 			panic(err)
 		}
+
 		s := strings.TrimSpace(string(b))
 		index := strings.Index(s, "=")
 		if index < 0 {
@@ -38,10 +41,29 @@ func InitConfig(path string) map[string]string {
 		if len(value) == 0 {
 			continue
 		}
-		config[key] = value
+		strings.Index(value,"，")
+		if index > 0 {
+			_ = fmt.Errorf("不能使用中文表点")
+		}
+		strings.Index(value,",")
+
+		if index > 0 {
+			aValue := strings.Split(value,",")
+			config[key] = aValue
+		}else {
+			config[key] = value
+		}
+
 	}
-	return config
+	marshal, err := json.Marshal(config)
+	Errors(err)
+	deploy := ConfigToDeploy(marshal)
+	return deploy
 }
+// 获取
+
+
+
 
 // InputEntry 将配置文件写入实体类
 func InputEntry(config map[string]string) (*entry.Deploy,error) {

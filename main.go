@@ -2,16 +2,15 @@ package main
 
 import (
 	"WT/entry"
-	"WT/util"
+	util "WT/util"
 )
 
 
 
+
+
 func main() {
-
-	deploy, err := util.ToDeploy()
-	util.Errors(err)
-
+	deploy := util.InitConfig("WT.conf")
 	week := util.ObtainWorkDayToCurrentWeek()
 
 	//文件读取
