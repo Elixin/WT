@@ -29,11 +29,30 @@ type TableContent struct {
 
 func (TableContent) SetValueInEntry(deploy *Deploy, week []string, parsing []string, allContext string) TableContent {
 	content := TableContent{}
+	if len(deploy.WorkPlace)>0 {
+		content.WorkPlace = append(content.WorkPlace, deploy.WorkPlace...)
+	}else {
+		content.WorkPlace = make([]string,5)
+	}
 
-	content.WorkPlace = append(content.WorkPlace, deploy.WorkPlace...)
-	content.WorkingDay = append(content.WorkingDay, week...)
-	content.ProjectName = append(content.ProjectName, deploy.ProjectName...)
-	content.NowWeekWorkContext = append(content.NowWeekWorkContext, deploy.NowWeekWorkContext...)
+	if len(week)>0 {
+		content.WorkingDay = append(content.WorkingDay, week...)
+	}else {
+		content.WorkingDay = make([]string,5)
+	}
+
+	if len(deploy.ProjectName)>0 {
+		content.ProjectName = append(content.ProjectName, deploy.ProjectName...)
+	}else {
+		content.ProjectName = make([]string,5)
+	}
+
+	if len(deploy.NowWeekWorkContext)>0 {
+		content.NowWeekWorkContext = append(content.NowWeekWorkContext, deploy.NowWeekWorkContext...)
+	}else {
+		content.NowWeekWorkContext = make([]string,5)
+	}
+
 
 	if len(parsing) == 1 {
 		for i := 0; i < 5; i++ {
@@ -44,8 +63,18 @@ func (TableContent) SetValueInEntry(deploy *Deploy, week []string, parsing []str
 			content.OverContext[i] = parsing[i]
 		}
 	}
-	content.Cost = append(content.Cost, deploy.Cost...)
-	content.Remark = append(content.Remark, deploy.Remark...)
+
+	if len(deploy.Cost)>0 {
+		content.Cost = append(content.Cost, deploy.Cost...)
+	}else {
+		content.Cost = make([]float64,5)
+	}
+
+	if len(deploy.Remark)>0 {
+		content.Remark = append(content.Remark, deploy.Remark...)
+	}else {
+		content.Remark = make([]string,5)
+	}
 
 
 	switch deploy.NowWeekNum {
