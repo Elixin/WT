@@ -66,12 +66,17 @@ func getWorkingDays() []string {
 		maxDay = getYearMonthToDay(years, month)
 		startDate = timeDifference
 	}
+	stepSize:=0
 	for i := 0; i < 5; i++ {
-		p:= startDate+i
+		p:= startDate+stepSize
+		stepSize++
 		if p>maxDay {
-			p=1
+			p,startDate=1,1
+			stepSize=1
 			if month==12 {
 				years,month = years+1,1
+			}else {
+				month+=1
 			}
 		}
 		workDates = append(workDates, fmt.Sprintf("%d.%d.%d",years,month,p))

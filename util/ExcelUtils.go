@@ -4,6 +4,7 @@ import (
 	"WT/entry"
 	"github.com/360EntSecGroup-Skylar/excelize/v2"
 	"io/ioutil"
+	"os"
 	reflect "reflect"
 	"strconv"
 	"strings"
@@ -11,7 +12,7 @@ import (
 )
 
 // ExcelCreate 创建Excel操作文件类
-func ExcelCreate(path string) *excelize.File {
+func ExcelCreate(path string) (*excelize.File,string) {
 	files, err := ioutil.ReadDir(path)
 	Errors(err)
 	var max int
@@ -33,7 +34,7 @@ func ExcelCreate(path string) *excelize.File {
 	path += "/" + files[max].Name()
 	file, err := excelize.OpenFile(path)
 	Errors(err)
-	return file
+	return file,path
 }
 func ExcelCreateMode(fileName string) *excelize.File {
 	file, err := excelize.OpenFile(fileName)
@@ -43,9 +44,10 @@ func ExcelCreateMode(fileName string) *excelize.File {
 func ExcelRead(content *entry.TableContent, deploy entry.Deploy) {
 	// 获取模板文件
 	var create *excelize.File
+	path:=""
 	if deploy.ModePath == "" {
 		print(deploy.OutPath)
-		create = ExcelCreate(deploy.OutPath)
+		create ,path= ExcelCreate(deploy.OutPath)
 	} else {
 		print(deploy.ModePath)
 		create = ExcelCreateMode(deploy.ModePath)
@@ -102,6 +104,7 @@ func ExcelRead(content *entry.TableContent, deploy entry.Deploy) {
 	Errors(err)
 	if deploy.ModePath == "" {
 		err = create.Save()
+		err = os.Rename(path, deploy.OutPath+"/"+fileName)
 		Errors(err)
 	}
 	if deploy.ModePath != "" {
@@ -157,10 +160,8 @@ func setCellStyle(sheetName string, create *excelize.File, nowRowNum int, modeHe
 func WriteFileContent(content *entry.TableContent, tableFieldName string) (value interface{}) {
 	// 反射获取实体类字段名
 	elem := reflect.ValueOf(content).Elem()
-	typeInfo := elem.Type()
 	tableFieldName = strings.Split(tableFieldName, "$")[1]
 	// 从结构体中获取切片
-	println(tableFieldName)
 	if strings.ContainsAny(tableFieldName, "_") {
 		split := strings.Split(tableFieldName, "_")
 		index, err := strconv.Atoi(split[1])
@@ -170,22 +171,7 @@ func WriteFileContent(content *entry.TableContent, tableFieldName string) (value
 		return of.Index(index - 1)
 
 	}
-	name, b := typeInfo.FieldByName(tableFieldName)
-	if b {
-		switch name.Type.Kind().String() {
-		case "int":
-			value := elem.FieldByName(tableFieldName).Interface().(int)
-			print(name.Name, value)
-			return value
-		case "float64":
-			value := elem.FieldByName(tableFieldName).Interface().(float64)
-			print(name.Name, value)
-			return value
-		case "string":
-			value := elem.FieldByName(tableFieldName).Interface().(string)
-			print(name.Name, value)
-			return value
-		}
-	}
-	return nil
+	// 通过字段名获取属性值
+	field := elem.FieldByName(tableFieldName)
+	return field
 }
