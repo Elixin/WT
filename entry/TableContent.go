@@ -14,7 +14,7 @@ type TableContent struct {
 	// 本周工作计划
 	NowWeekWorkContext []string
 	// 完成内容
-	OverContext []string
+	OverContext [5]string
 	// 工作总结
 	WorkSummary string
 	// 学习计划
@@ -29,13 +29,12 @@ type TableContent struct {
 
 func (TableContent) SetValueInEntry(deploy *Deploy, week []string, parsing []string, allContext string) TableContent {
 	content := TableContent{}
-	content.WorkPlace = deploy.WorkPlace
 
-	for i := 0; i < 5; i++ {
-		content.WorkingDay[i] = week[i]
-	}
-	content.ProjectName = deploy.ProjectName
-	content.NowWeekWorkContext = deploy.NowWeekWorkContext
+	content.WorkPlace = append(content.WorkPlace, deploy.WorkPlace...)
+	content.WorkingDay = append(content.WorkingDay, week...)
+	content.ProjectName = append(content.ProjectName, deploy.ProjectName...)
+	content.NowWeekWorkContext = append(content.NowWeekWorkContext, deploy.NowWeekWorkContext...)
+
 	if len(parsing) == 1 {
 		for i := 0; i < 5; i++ {
 			content.OverContext[i] = parsing[0]
@@ -45,9 +44,9 @@ func (TableContent) SetValueInEntry(deploy *Deploy, week []string, parsing []str
 			content.OverContext[i] = parsing[i]
 		}
 	}
+	content.Cost = append(content.Cost, deploy.Cost...)
+	content.Remark = append(content.Remark, deploy.Remark...)
 
-	content.Cost = deploy.Cost
-	content.Remark = deploy.Remark
 
 	switch deploy.NowWeekNum {
 	case 1:

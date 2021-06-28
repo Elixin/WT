@@ -15,7 +15,7 @@ func main() {
 	util.Errors(err)
 	// 文本提取
 	parsing, allContext := TextParsingRewrite(acquisition)
-	println(parsing,allContext)
+
 	tableContent := entry.TableContent{}
 	tableContent = tableContent.SetValueInEntry(deploy, week, parsing, allContext)
 	util.ExcelRead(&tableContent,*deploy)
