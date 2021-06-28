@@ -4,6 +4,7 @@ import (
 	"WT/entry"
 	"github.com/360EntSecGroup-Skylar/excelize/v2"
 	"io/ioutil"
+	"os"
 	reflect "reflect"
 	"strconv"
 	"strings"
@@ -11,7 +12,7 @@ import (
 )
 
 // ExcelCreate 创建Excel操作文件类
-func ExcelCreate(path string) *excelize.File {
+func ExcelCreate(path string) (*excelize.File,string) {
 	files, err := ioutil.ReadDir(path)
 	Errors(err)
 	var max int
@@ -33,7 +34,7 @@ func ExcelCreate(path string) *excelize.File {
 	path += "/" + files[max].Name()
 	file, err := excelize.OpenFile(path)
 	Errors(err)
-	return file
+	return file,path
 }
 func ExcelCreateMode(fileName string) *excelize.File {
 	file, err := excelize.OpenFile(fileName)
@@ -43,9 +44,10 @@ func ExcelCreateMode(fileName string) *excelize.File {
 func ExcelRead(content *entry.TableContent, deploy entry.Deploy) {
 	// 获取模板文件
 	var create *excelize.File
+	path:=""
 	if deploy.ModePath == "" {
 		print(deploy.OutPath)
-		create = ExcelCreate(deploy.OutPath)
+		create ,path= ExcelCreate(deploy.OutPath)
 	} else {
 		print(deploy.ModePath)
 		create = ExcelCreateMode(deploy.ModePath)
@@ -102,6 +104,7 @@ func ExcelRead(content *entry.TableContent, deploy entry.Deploy) {
 	Errors(err)
 	if deploy.ModePath == "" {
 		err = create.Save()
+		err = os.Rename(path, deploy.OutPath+"/"+fileName)
 		Errors(err)
 	}
 	if deploy.ModePath != "" {
