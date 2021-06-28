@@ -2,15 +2,12 @@ package main
 
 import (
 	"WT/entry"
-	util "WT/util"
+	"WT/util"
 )
-
-
-
-
 
 func main() {
 	deploy := util.InitConfig("WT.conf")
+	// TODO 考虑配置文件
 	week := util.ObtainWorkDayToCurrentWeek()
 
 	//文件读取
@@ -18,6 +15,7 @@ func main() {
 	util.Errors(err)
 	// 文本提取
 	parsing, allContext := TextParsingRewrite(acquisition)
+	println(parsing,allContext)
 	tableContent := entry.TableContent{}
 	tableContent = tableContent.SetValueInEntry(deploy, week, parsing, allContext)
 	util.ExcelRead(&tableContent,*deploy)
