@@ -36,26 +36,30 @@ func ExcelCreate(path string) (*excelize.File,string) {
 	Errors(err)
 	return file,path
 }
+
 func ExcelCreateMode(fileName string) *excelize.File {
 	file, err := excelize.OpenFile(fileName)
 	Errors(err)
 	return file
 }
+
+func fileName(firstDay string,endDay string,currentMonth string,currentWeek string,author string) string {
+	return firstDay+"-"+endDay+"-"+currentMonth+currentWeek+"工作周报("+author+").xlsx"
+}
+
 func ExcelRead(content *entry.TableContent, deploy entry.Deploy) {
 	// 获取模板文件
 	var create *excelize.File
 	path:=""
 	if deploy.ModePath == "" {
-		print(deploy.OutPath)
 		create ,path= ExcelCreate(deploy.OutPath)
 	} else {
-		print(deploy.ModePath)
 		create = ExcelCreateMode(deploy.ModePath)
 	}
 
 	// 获取写入文件
-	nowMonth := strconv.Itoa(int(time.Now().Month())) + "月"
-	fileName := content.WorkingDay[0] + "-" + content.WorkingDay[len(content.WorkingDay)-1] + " - " + nowMonth + content.NowWeek + "工作周报(" + deploy.Author + ").xlsx"
+	nowMonth :=  strconv.Itoa(int(time.Now().Month())) + "月"
+	fileName := fileName(content.WorkingDay[0],content.WorkingDay[len(content.WorkingDay)-1],nowMonth,content.NowWeek,deploy.Author)
 	nowSheetName := nowMonth
 	defaultSheetName := "Sheet1"
 	// 获取模板所有数据

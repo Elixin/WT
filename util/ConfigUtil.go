@@ -145,7 +145,7 @@ func getArray(value string) interface{}{
 			return floatArray
 		}
 	}
-	return nil
+	return split
 }
 
 
