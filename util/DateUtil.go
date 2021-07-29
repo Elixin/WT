@@ -2,6 +2,7 @@ package util
 
 import (
 	"fmt"
+	"strconv"
 	time "time"
 )
 
@@ -115,4 +116,8 @@ func getYearMonthToDay(year int, month int) int {
 	}
 	// 得出2月的天数
 	return 28
+}
+
+func MonthName1() string {
+	return strconv.Itoa(int(time.Now().Month())) + "月"
 }
