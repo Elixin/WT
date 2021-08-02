@@ -64,7 +64,7 @@ func InitConfig(path string) *entry.Deploy {
 			config[key] = array
 		}else {
 			num := isNum(value)
-			if isNum(value)!=nil {
+			if num!=nil {
 				config[key] = num
 				continue
 			}
@@ -152,6 +152,9 @@ func getArray(value string) interface{}{
 // 获取
 
 func isNum(str string) interface{} {
+	if strings.HasSuffix(str, "-s") {
+		return strings.Split(str,"-s")[0]
+	}
 	Int, err := strconv.ParseInt(str, 10, 64)
 	if err == nil {
 		return Int

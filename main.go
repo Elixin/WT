@@ -6,8 +6,8 @@ import (
 )
 
 func main() {
+	//util.InitMail()
 	deploy := util.InitConfig("WT.conf")
-	// TODO 考虑配置文件
 	week := util.ObtainWorkDayToCurrentWeek()
 
 	//文件读取
@@ -18,11 +18,13 @@ func main() {
 
 	tableContent := entry.TableContent{}
 	tableContent = tableContent.SetValueInEntry(deploy, week, parsing, allContext)
-	util.ExcelRead(&tableContent,*deploy)
+	filePath := util.ExcelRead(&tableContent, *deploy)
+	err = util.InitMail(*deploy, tableContent.Title, allContext, filePath)
 	util.Errors(err)
 	// 创建邮箱发送地址
 	// 写入发送内容模板
 	// 指定发送人
 	// 写入定时器
+
 
 }

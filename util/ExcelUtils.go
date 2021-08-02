@@ -47,7 +47,7 @@ func fileName(firstDay string,endDay string,currentMonth string,currentWeek stri
 	return firstDay+"-"+endDay+"-"+currentMonth+currentWeek+"工作周报("+author+").xlsx"
 }
 
-func ExcelRead(content *entry.TableContent, deploy entry.Deploy) {
+func ExcelRead(content *entry.TableContent, deploy entry.Deploy) string {
 	// 获取模板文件
 	var create *excelize.File
 	path:=""
@@ -115,7 +115,7 @@ func ExcelRead(content *entry.TableContent, deploy entry.Deploy) {
 		err := create.SaveAs(deploy.OutPath + "/" + fileName)
 		Errors(err)
 	}
-
+	return deploy.OutPath+"/"+fileName
 }
 
 // 获取模板单元格样式

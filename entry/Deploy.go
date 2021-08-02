@@ -10,6 +10,12 @@ type Deploy struct {
 	Author string `json:"author"`
 	// 当前周数
 	NowWeekNum int `json:"now_week_num"`
+	// 发送人
+	Form string `json:"form"`
+	// 服务商
+	Operator string `json:"operator"`
+	// 密码
+	Password string `json:"password"`
 	// 邮件主送人
 	Sender []string `json:"sender"`
 	// 邮件抄送人
